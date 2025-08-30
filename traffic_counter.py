@@ -8,7 +8,7 @@ class TrafficCounter:
         '''Reads the traffic data from a file and returns a DataFrame.'''
         df = pd.read_csv(
             traffic_data,
-            sep=" ",
+            sep=r"\s+",
             names=["timestamp", "traffic_count"],
             parse_dates=["timestamp"]
         )
@@ -32,8 +32,8 @@ class TrafficCounter:
         '''Returns the least seen traffic count and the corresponding timestamps in a 1.5 hour window.'''
         roll_sum = self.df["traffic_count"].rolling(3).sum()
         contiguous = (
-            self.df["timestamp"].diff().eq("30min") &
-            self.df["timestamp"].diff(2).eq("60min")
+            self.df["timestamp"].diff().eq(pd.Timedelta("30min")) &
+            self.df["timestamp"].diff(2).eq(pd.Timedelta("60min"))
         )
         contiguous_df = roll_sum.where(contiguous)
         if contiguous_df.empty:
